@@ -16,14 +16,13 @@ module.exports = {
     chats: (_, __, { Chat }) => Chat.find({}),
     chat: (_, { id }, { Chat }) => Chat.find(id),
     me: (_, __, context) => {
-      console.log("the user is", context.user);
       return context.user;
     }
   },
   Mutation: {
     addChat: async (_, { message }, { Chat, user, User }) => {
       const userThatSentChat = await User.findById(user.id);
-      console.log("current usi busi: ", user);
+
       const chat = new Chat({
         message,
         sentBy: user
@@ -42,7 +41,7 @@ module.exports = {
         email,
         password
       });
-      console.log("hiiiiiiiiii", user);
+
       context.login(user);
       return { user };
     },
@@ -71,12 +70,17 @@ module.exports = {
   },
   Chat: {
     message: Chat => Chat.message,
-    sentBy: Chat => console.log(Chat.sentBy)
+    sentBy: async (chat, args, { Chat }) => {
+      const foundChat = await Chat.findById(chat.id).populate("sentBy");
+      return foundChat.sentBy;
+    }
   },
   User: {
     email: User => User.email,
-    chats: User => User.chats
+    chats: async (parent, args, { User, user }) => {
+      const foundUser = await User.findById(user.id).populate("chats");
+      console.log("This is the found user: ", foundUser);
+      return foundUser.chats;
+    }
   }
 };
-
-// TODO: populate!

@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   email: String,
   password: String,
-  chats: [mongoose.Schema.Types.ObjectId]
+  chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "chat" }]
 });
 
 const User = mongoose.model("user", userSchema);
