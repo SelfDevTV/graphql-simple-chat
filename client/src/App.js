@@ -1,5 +1,5 @@
 import React from "react";
-import { Query } from "react-apollo";
+import { Query, Subscription } from "react-apollo";
 import { gql } from "apollo-boost";
 
 const GET_CHATS = gql`
@@ -10,16 +10,26 @@ const GET_CHATS = gql`
   }
 `;
 
+const CHATS_SUBSCRIBE = gql`
+  subscription {
+    chatAdded {
+      message
+    }
+  }
+`;
+
+// TODO: Fetch chats, and then subscribe and merge the comming chats to local state
+
 function App() {
   return (
-    <Query query={GET_CHATS}>
-      {({ loading, error, data }) => {
+    <Subscription subscription={CHATS_SUBSCRIBE}>
+      {({ data, loading }) => {
+        console.log(data);
         if (loading) return <p>Loading</p>;
-        return data.chats.map(chat => {
-          return <p>{chat.message}</p>;
-        });
+
+        return <h2>{data.chatAdded.message}</h2>;
       }}
-    </Query>
+    </Subscription>
   );
 }
 
