@@ -3,14 +3,6 @@ const { PubSub } = require("apollo-server-express");
 
 const pubsub = new PubSub();
 
-const users = [
-  {
-    id: 1,
-    email: "test@gmail.com",
-    chats: [1]
-  }
-];
-
 module.exports = {
   Query: {
     chats: (_, __, { Chat }) => Chat.find({}),

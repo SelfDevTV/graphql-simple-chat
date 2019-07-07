@@ -11,6 +11,7 @@ const { GraphQLLocalStrategy, buildContext } = require("graphql-passport");
 const http = require("http");
 const User = require("./models/User");
 const Chat = require("./models/Chat");
+const cors = require("cors");
 
 mongoose
   .connect(process.env.DB_CONNECT, { useNewUrlParser: true })
@@ -47,6 +48,8 @@ app.use(
   })
 );
 
+app.use(cors({ credentials: true }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -72,7 +75,7 @@ const server = new ApolloServer({
   }
 });
 
-server.applyMiddleware({ app, cors: false });
+server.applyMiddleware({ app, cors: true });
 
 const httpServer = http.createServer(app);
 server.installSubscriptionHandlers(httpServer);
