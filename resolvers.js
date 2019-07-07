@@ -22,10 +22,8 @@ module.exports = {
   },
   Mutation: {
     addChat: async (_, { message }, { Chat, user, User }) => {
-      pubsub.publish(CHAT_ADDED, { chatAdded: message });
-      console.log(user);
       const userThatSentChat = await User.findById(user.id);
-
+      console.log("current usi busi: ", user);
       const chat = new Chat({
         message,
         sentBy: user
@@ -35,6 +33,7 @@ module.exports = {
 
       userThatSentChat.chats.push(chat);
       await userThatSentChat.save();
+      pubsub.publish(CHAT_ADDED, chat);
 
       return chat;
     },
@@ -66,15 +65,18 @@ module.exports = {
   },
   Subscription: {
     chatAdded: {
+      resolve: chat => chat,
       subscribe: () => pubsub.asyncIterator([CHAT_ADDED])
     }
   },
   Chat: {
     message: Chat => Chat.message,
-    sentBy: Chat => Chat.sentBy
+    sentBy: Chat => console.log(Chat.sentBy)
   },
   User: {
     email: User => User.email,
     chats: User => User.chats
   }
 };
+
+// TODO: populate!
