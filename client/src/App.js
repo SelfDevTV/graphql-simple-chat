@@ -1,11 +1,16 @@
 import React from "react";
-import { Query, Subscription } from "react-apollo";
+import { Query } from "react-apollo";
 import { gql } from "apollo-boost";
 
 const GET_CHATS = gql`
   {
     chats {
+      _id
       message
+      sentBy {
+        _id
+        email
+      }
     }
   }
 `;
@@ -13,23 +18,50 @@ const GET_CHATS = gql`
 const CHATS_SUBSCRIBE = gql`
   subscription {
     chatAdded {
+      _id
       message
+      sentBy {
+        _id
+        email
+      }
     }
   }
 `;
 
-// TODO: Fetch chats, and then subscribe and merge the comming chats to local state
+let sub = null;
 
 function App() {
   return (
-    <Subscription subscription={CHATS_SUBSCRIBE}>
-      {({ data, loading }) => {
-        console.log(data);
+    <Query query={GET_CHATS}>
+      {({ loading, error, data, subscribeToMore }) => {
         if (loading) return <p>Loading</p>;
+        if (!sub) {
+          sub = subscribeToMore({
+            document: CHATS_SUBSCRIBE,
+            updateQuery: (prev, { subscriptionData }) => {
+              if (!subscriptionData.data) return prev;
+              const { chatAdded } = subscriptionData.data;
+              return {
+                ...prev,
+                chats: [...prev.chats, chatAdded]
+              };
+            }
+          });
+        }
 
-        return <h2>{data.chatAdded.message}</h2>;
+        console.log("data: ", data);
+        return (
+          <div>
+            {data.chats.map(chat => (
+              <div key={chat._id}>
+                <p>User: {chat.sentBy && chat.sentBy.email}</p>
+                <p>Message: {chat.message}</p>
+              </div>
+            ))}
+          </div>
+        );
       }}
-    </Subscription>
+    </Query>
   );
 }
 
