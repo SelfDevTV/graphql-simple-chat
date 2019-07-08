@@ -49,6 +49,7 @@ app.use(
 );
 
 app.use(cors({ credentials: true }));
+app.use(bodyParser.json());
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -63,11 +64,6 @@ const server = new ApolloServer({
       return buildContext({ User, Chat, req, res });
     }
   },
-  //   subscriptions: {
-  //     onConnect: async (connectionParams, webSocket, { request }) => {
-  //       console.log(request);
-  //     }
-  //   },
   playground: {
     settings: {
       "request.credentials": "include"

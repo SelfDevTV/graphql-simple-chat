@@ -29,6 +29,7 @@ module.exports = {
       return chat;
     },
     login: async (parent, { email, password }, context) => {
+      console.log("login attempted with user and pw: ", email, password);
       const { user } = await context.authenticate("graphql-local", {
         email,
         password

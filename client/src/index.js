@@ -11,7 +11,8 @@ import { getMainDefinition } from "apollo-utilities";
 const wsLink = new WebSocketLink({
   uri: `ws://localhost:4000/graphql`,
   options: {
-    reconnect: true
+    reconnect: true,
+    reconnectionAttempts: 10000
   }
 });
 
@@ -38,12 +39,21 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
+const rootEl = document.getElementById("root");
+
 ReactDOM.render(
   <ApolloProvider client={client}>
     <App />
   </ApolloProvider>,
-  document.getElementById("root")
+  rootEl
 );
+
+if (module.hot) {
+  module.hot.accept("./App", () => {
+    const NextApp = require("./App").default;
+    ReactDOM.render(<NextApp />, rootEl);
+  });
+}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
