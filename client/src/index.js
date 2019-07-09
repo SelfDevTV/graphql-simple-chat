@@ -18,7 +18,8 @@ const wsLink = new WebSocketLink({
 
 // Create an http link:
 const httpLink = new HttpLink({
-  uri: "http://localhost:4000/graphql"
+  uri: "http://localhost:4000/graphql",
+  credentials: "include"
 });
 
 const link = split(

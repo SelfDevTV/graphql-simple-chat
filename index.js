@@ -43,13 +43,18 @@ const app = express();
 app.use(
   session({
     secret: "testsecret",
-    resave: true,
+    resave: false,
     saveUninitialized: true
   })
 );
 
-// app.use(cors({ credentials: true }));
-// app.use(bodyParser.json());
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:3000"
+  })
+);
+app.use(bodyParser.json());
 
 app.use(passport.initialize());
 app.use(passport.session());
