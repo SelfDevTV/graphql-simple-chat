@@ -40,6 +40,13 @@ const PORT = 4000;
 
 const app = express();
 
+// app.use(
+//   cors({
+//     credentials: true,
+//     origin: ["http://localhost:3000"]
+//   })
+// );
+
 app.use(
   session({
     secret: "testsecret",
@@ -48,13 +55,7 @@ app.use(
   })
 );
 
-app.use(
-  cors({
-    credentials: true,
-    origin: "http://localhost:3000"
-  })
-);
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -72,7 +73,13 @@ const server = new ApolloServer({
   }
 });
 
-server.applyMiddleware({ app });
+server.applyMiddleware({
+  app,
+  cors: {
+    credentials: true,
+    origin: "http://localhost:3000"
+  }
+});
 
 const httpServer = http.createServer(app);
 server.installSubscriptionHandlers(httpServer);
