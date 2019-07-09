@@ -43,13 +43,13 @@ const app = express();
 app.use(
   session({
     secret: "testsecret",
-    resave: false,
-    saveUninitialized: false
+    resave: true,
+    saveUninitialized: true
   })
 );
 
-app.use(cors({ credentials: true }));
-app.use(bodyParser.json());
+// app.use(cors({ credentials: true }));
+// app.use(bodyParser.json());
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -58,11 +58,7 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ req, res, connection }) => {
-    if (connection) {
-      return connection.context;
-    } else {
-      return buildContext({ User, Chat, req, res });
-    }
+    return buildContext({ User, Chat, req, res });
   },
   playground: {
     settings: {
@@ -71,7 +67,7 @@ const server = new ApolloServer({
   }
 });
 
-server.applyMiddleware({ app, cors: true });
+server.applyMiddleware({ app });
 
 const httpServer = http.createServer(app);
 server.installSubscriptionHandlers(httpServer);

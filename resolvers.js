@@ -13,6 +13,7 @@ module.exports = {
   },
   Mutation: {
     addChat: async (_, { message }, { Chat, user, User }) => {
+      console.log("attempted to add chat. User: ", user);
       const userThatSentChat = await User.findById(user.id);
 
       const chat = new Chat({
@@ -62,6 +63,7 @@ module.exports = {
     }
   },
   Chat: {
+    _id: Chat => Chat.id,
     message: Chat => Chat.message,
     sentBy: async (chat, args, { Chat }) => {
       const foundChat = await Chat.findById(chat.id).populate("sentBy");

@@ -1,6 +1,20 @@
 import React from "react";
 import { Query } from "react-apollo";
 import { gql } from "apollo-boost";
+import AddChat from "./AddChat";
+
+const ADD_CHAT = gql`
+  mutation AddChat($message: String!) {
+    addChat(message: $message) {
+      message
+      _id
+      sentBy {
+        _id
+        email
+      }
+    }
+  }
+`;
 
 const GET_CHATS = gql`
   {
@@ -54,10 +68,11 @@ function App() {
           <div>
             {data.chats.map(chat => (
               <div key={chat._id}>
-                <p>User: {chat.sentBy && chat.sentBy.email}</p>
+                <p>Users: {chat.sentBy && chat.sentBy.email}</p>
                 <p>Message: {chat.message}</p>
               </div>
             ))}
+            <AddChat ADD_CHAT={ADD_CHAT} />
           </div>
         );
       }}
